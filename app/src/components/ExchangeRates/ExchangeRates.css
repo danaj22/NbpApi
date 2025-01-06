@@ -1,0 +1,10 @@
+.loader {
+  justify-items: center;
+}
+
+.container {
+  justify-self: center;
+  border: 1px solid white;
+  width: 100%;
+  padding: 10px;
+}

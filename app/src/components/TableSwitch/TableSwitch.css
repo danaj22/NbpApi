@@ -1,0 +1,15 @@
+.nav-link {
+  color: rgb(255, 255, 255, 0.87);
+  padding: 10px;
+  display: block;
+}
+
+.nav-link:hover {
+  color: #016cff;
+  cursor: pointer;
+}
+
+.active {
+  color: #016cff;
+  border-bottom: 2px solid #016cff;
+}

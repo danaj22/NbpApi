@@ -1,0 +1,54 @@
+name: currency-app
+
+services:
+    mssql:
+        image: mcr.microsoft.com/mssql/server:2022-CU12-ubuntu-22.04
+        restart: no
+        hostname: scratch-mssql
+        environment:
+          - ACCEPT_EULA=Y
+          - MSSQL_SA_PASSWORD=${DB_PASSWORD}
+          - MSSQL_PID=Developer
+          - MSSQL_BACKUP_DIR=/var/opt/mssql/backups
+          - MSSQL_LCID=1033
+          - TZ=Etc/UTC
+        ports:
+          - 14330:1433
+        volumes:
+          - ./data/mssql/backups:/var/opt/mssql/backups
+          - ./data/mssql/data:/var/opt/mssql/data
+          - ./data/mssql/log:/var/opt/mssql/log
+    
+    cache:
+        image: redis:6.2-alpine
+        restart: always
+        ports:
+          - '6379:6379'
+        command: redis-server --save 20 1 --loglevel warning
+        volumes: 
+          - ./cache:/data
+
+    frontend:
+        build:
+          context: ./app
+          dockerfile: Dockerfile
+        container_name: frontend
+        ports:
+          - '8000:3000'
+
+    currencyappapi:
+        container_name: backend
+        image: ${DOCKER_REGISTRY-}currencyappapi
+        build:
+          context: .
+          dockerfile: CurrencyApp/Dockerfile
+        ports:
+          - '8080:8080'
+          - '8081:8081' 
+        depends_on:
+          - mssql
+          - cache
+
+networks:
+    default:
+        name: scratch-mssql-net
